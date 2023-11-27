@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
+import time
 
 # Function to retrieve the description of the listing
 def get_title(description): 
@@ -21,23 +22,40 @@ def get_link(card):
     link = 'https://www.onthemarket.com' + link['href']
     return link
 
-# Opens up an instance of firefox, to access the html of the page
-browser = webdriver.Firefox()
-browser.get('https://www.onthemarket.com/for-sale/property/gravesend/')
-page_source = browser.page_source
-soup = BeautifulSoup(page_source, 'lxml')
+def property_scrape():
+    # Opens up an instance of firefox, to access the html of the page
+    browser = webdriver.Firefox()
+    browser.get('https://www.onthemarket.com/for-sale/property/gravesend/')
+    page_source = browser.page_source
+    soup = BeautifulSoup(page_source, 'lxml')
 
-# For each listing on the site, gets the description, price and link, then prints this information
-property_cards = soup.find_all('li', class_ ='otm-PropertyCard')
-for card in property_cards:
-    description = card.find('span', class_ = 'title')
-    if description:
-        title_text = get_title(description)
-        price = get_price(card)
-        link = get_link(card)
-        print(f'{title_text}: {price} \n {link} \n')
+    # For each listing on the site, gets the description, price and link, then prints this information
+    property_cards = soup.find_all('li', class_ ='otm-PropertyCard')
+    for card in property_cards:
+        description = card.find('span', class_ = 'title')
+        if description:
+            title_text = get_title(description)
+            price = get_price(card)
+            link = get_link(card)
+            print(f'{title_text}: {price} \n {link} \n')
+        else:
+            pass
+        
+    # Exits the browser once all the information has been collected
+    browser.quit()
+
+if __name__ == '__main__':
+    # Prompting to give option to run repeatedly
+    time_mins = int(input('How many minutes between each run. Press 0 to only run once: '))
+    if time_mins == 0:
+        property_scrape()
+        print('Complete')
     else:
-        pass
-    
-# Exits the browser once all the information has been collected
-browser.quit()
+        while True:
+            # Multiplying the time input by 60, so time.sleep sleeps in seconds
+            property_scrape()
+            time_wait = 60
+            print(f'Waiting {time_mins} minutes')
+            time.sleep(time_mins * time_wait)
+
+
