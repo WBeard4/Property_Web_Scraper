@@ -8,7 +8,12 @@ def get_title(description):
         title_text = title_element.text.strip()
         return title_text
 
-
+def get_price(card):
+    price_element = card.find('a', class_ = 'mb-0 text-lg font-bold text-denim price')
+    if price_element:
+        price_text = price_element.text.strip()
+        return price_text
+    
 browser = webdriver.Firefox()
 
 browser.get('https://www.onthemarket.com/for-sale/property/gravesend/')
@@ -20,10 +25,10 @@ for card in property_cards:
     description = card.find('span', class_ = 'title')
     if description:
         title_text = get_title(description)
-        # if title_text:
-            # Find the price that for property here
-                # if price exists
-                    # Get link to property
+        if title_text:
+            price_text = get_price(card)
+            #if price_text:
+                #link = get_link(card)
         # Else
             # Move on to next property
 
