@@ -14,6 +14,11 @@ def get_price(card):
         price_text = price_element.text.strip()
         return price_text
     
+def get_link(card):
+    link = card.find('a', href = True)
+    link = 'https://www.onthemarket.com' + link['href']
+    return link
+
 browser = webdriver.Firefox()
 
 browser.get('https://www.onthemarket.com/for-sale/property/gravesend/')
@@ -27,11 +32,16 @@ for card in property_cards:
         title_text = get_title(description)
         if title_text:
             price_text = get_price(card)
-            #if price_text:
-                #link = get_link(card)
-        # Else
-            # Move on to next property
-
+            if price_text:
+                link = get_link(card)
+                print(f'{title_text}: {price_text} \n {link} \n')
+            else:
+                pass
+        else:
+            pass
+    else:
+        pass
+    
 
 
 
