@@ -24,6 +24,13 @@ def get_link(card):
     link = 'https://www.onthemarket.com' + link['href']
     return link
 
+# Turning the dictionary into a dataframe, then exporting to excel
+def export_excel(data):
+    df = pd.DataFrame(data)
+    current_datetime = datetime.now() # Adding datetime to each file so each is unique
+    current_datetime = str(current_datetime).replace(" ", "_").replace(":", "_")
+    df.to_excel(f'Listings/Listings_{str(current_datetime.strip(" "))}.xlsx', index=False)
+
 def property_scrape():
     # Opens up an instance of firefox, to access the html of the page
     browser = webdriver.Firefox()
@@ -48,19 +55,11 @@ def property_scrape():
             data['Listing Description'].append(title_text)
             data['Price'].append(price)
             data['Link'].append(link)
-
-            #print(f'{title_text}: {price} \n {link} \n')
-
         else:
             pass
-    
-    # Turning the dictionary into a dataframe, then exporting to excel
-    df = pd.DataFrame(data)
-    current_datetime = datetime.now() # Adding datetime to each file so each is unique
-    current_datetime = str(current_datetime).replace(" ", "_").replace(":", "_")
-    df.to_excel(f'Listings/Listings_{str(current_datetime.strip(" "))}.xlsx', index=False)
 
-    # Exits the browser once all the information has been collected
+    # Exits the browser once all the information has been collected, exports results to excel
+    export_excel(data) 
     browser.quit()
 
 if __name__ == '__main__':
