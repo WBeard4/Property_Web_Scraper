@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
+import pandas as pd
+from datetime import datetime
 
 # Function to retrieve the description of the listing
 def get_title(description): 
@@ -31,16 +33,33 @@ def property_scrape():
 
     # For each listing on the site, gets the description, price and link, then prints this information
     property_cards = soup.find_all('li', class_ ='otm-PropertyCard')
+    # Creating a dictionary to be able to export to a dataframe later, allowing exporting to excel
+    data = {'Listing Description': [],
+            'Price': [],
+            'Link': []}
+    
     for card in property_cards:
         description = card.find('span', class_ = 'title')
         if description:
             title_text = get_title(description)
             price = get_price(card)
             link = get_link(card)
-            print(f'{title_text}: {price} \n {link} \n')
+            # Adding the items to the previously created dictionary
+            data['Listing Description'].append(title_text)
+            data['Price'].append(price)
+            data['Link'].append(link)
+
+            #print(f'{title_text}: {price} \n {link} \n')
+
         else:
             pass
-        
+    
+    # Turning the dictionary into a dataframe, then exporting to excel
+    df = pd.DataFrame(data)
+    current_datetime = datetime.now() # Adding datetime to each file so each is unique
+    current_datetime = str(current_datetime).replace(" ", "_").replace(":", "_")
+    df.to_excel(f'Listings/Listings_{str(current_datetime.strip(" "))}.xlsx', index=False)
+
     # Exits the browser once all the information has been collected
     browser.quit()
 
@@ -55,7 +74,7 @@ if __name__ == '__main__':
             # Multiplying the time input by 60, so time.sleep sleeps in seconds
             property_scrape()
             time_wait = 60
-            print(f'Waiting {time_mins} minutes')
+            print(f'Complete, Waiting {time_mins} minutes')
             time.sleep(time_mins * time_wait)
 
 
