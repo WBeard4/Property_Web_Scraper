@@ -38,8 +38,9 @@ def property_scrape():
     page_source = browser.page_source
     soup = BeautifulSoup(page_source, 'lxml')
 
-    # For each listing on the site, gets the description, price and link, then prints this information
+    # Retrieves each of the property cards on the page, then closes the browser
     property_cards = soup.find_all('li', class_ ='otm-PropertyCard')
+    browser.quit()
     # Creating a dictionary to be able to export to a dataframe later, allowing exporting to excel
     data = {'Listing Description': [],
             'Price': [],
@@ -60,8 +61,7 @@ def property_scrape():
 
     # Exits the browser once all the information has been collected, exports results to excel
     export_excel(data) 
-    browser.quit()
-
+    
 if __name__ == '__main__':
     # Prompting to give option to run repeatedly
     time_mins = int(input('How many minutes between each run. Press 0 to only run once: '))
@@ -72,8 +72,7 @@ if __name__ == '__main__':
         while True:
             # Multiplying the time input by 60, so time.sleep sleeps in seconds
             property_scrape()
-            time_wait = 60
             print(f'Complete, Waiting {time_mins} minutes')
-            time.sleep(time_mins * time_wait)
+            time.sleep(time_mins * 60)
 
 
